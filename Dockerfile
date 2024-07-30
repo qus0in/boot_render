@@ -4,11 +4,11 @@ WORKDIR /app
 COPY build.gradle settings.gradle ./
 COPY src src
 RUN gradle build --no-daemon -x test
-RUN ls /app/build/libs/
 
 # Stage 2: Create the final Docker image
 FROM eclipse-temurin:17-jre-alpine
 WORKDIR /app
-COPY --from=build /app/build/libs/resql-0.0.1-SNAPSHOT.jar app.jar
-ENTRYPOINT ["java", "-jar", "/app.jar"]
+# Copy the JAR file, excluding the plain JAR
+COPY --from=build /app/build/libs/!(*plain).jar app.jar
+ENTRYPOINT ["java", "-jar", "/app/app.jar"]
 EXPOSE 8080
