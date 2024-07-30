@@ -9,6 +9,6 @@ RUN ls /app/build/libs/
 # Stage 2: Create the final Docker image
 FROM eclipse-temurin:17-jre-alpine
 WORKDIR /app
-COPY --from=build /app/build/libs/*.jar app.jar
+COPY --from=build /app/build/libs/resql-0.0.1-SNAPSHOT.jar app.jar
 ENTRYPOINT ["java", "-jar", "/app.jar"]
 EXPOSE 8080
