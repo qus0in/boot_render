@@ -1,12 +1,13 @@
-# Build stage
-FROM gradle:7.6.1-jdk17-alpine AS build
-WORKDIR /home/gradle/src
-COPY --chown=gradle:gradle . .
-RUN gradle build --no-daemon
+# Stage 1: Build the application
+FROM gradle:7.6.1-jdk17 AS build
+WORKDIR /app
+COPY build.gradle settings.gradle ./
+COPY src src
+RUN gradle build --no-daemon -x test
 
-# Run stage
+# Stage 2: Create the final Docker image
 FROM eclipse-temurin:17-jre-alpine
 WORKDIR /app
-COPY --from=build /home/gradle/src/build/libs/*.jar app.jar
+COPY --from=build /app/build/libs/*.jar app.jar
+ENTRYPOINT ["java", "-jar", "/app.jar"]
 EXPOSE 8080
-ENTRYPOINT ["java", "-jar", "app.jar"]
